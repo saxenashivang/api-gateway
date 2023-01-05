@@ -55,7 +55,12 @@ func NewRouter(
 
 	httpRouter.GET("/health-check", func(c *gin.Context) {
 		// utils.SendSentryMsg(c, "Error")
-		c.JSON(http.StatusOK, gin.H{"data": "clean architecture 📺 API Up and Running"})
+		c.JSON(http.StatusOK, gin.H{"data": "Up and Running"})
+	})
+
+	httpRouter.GET("/ping", func(c *gin.Context) {
+		// utils.SendSentryMsg(c, "Error")
+		c.JSON(http.StatusOK, gin.H{"data": "Pong"})
 	})
 
 	return Router{
