@@ -6,14 +6,17 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/saxenashivang/api-gateway/api/middlewares"
 	"github.com/saxenashivang/api-gateway/api/routes"
-	"github.com/saxenashivang/api-gateway/infrastructure"
+	"github.com/saxenashivang/api-gateway/http/router"
 	"github.com/saxenashivang/api-gateway/lib"
 )
 
-func Run(middleware middlewares.Middlewares,
-	env *lib.Env,
+func Run(
+	middleware middlewares.Middlewares,
+	env lib.Env,
 	route routes.Routes,
-	logger lib.Logger, router infrastructure.Router) {
+	logger lib.Logger,
+	router router.Router,
+) {
 	logger.Info(`+-----------------------+`)
 	logger.Info(`| API-GATEWAY |`)
 	logger.Info(`+-----------------------+`)

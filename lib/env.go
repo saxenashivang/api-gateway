@@ -1,6 +1,8 @@
 package lib
 
 import (
+	"log"
+
 	"github.com/spf13/viper"
 )
 
@@ -21,20 +23,19 @@ func GetEnv() Env {
 	return globalEnv
 }
 
-func NewEnv(logger Logger) *Env {
+func NewEnv() Env {
+	env := Env{}
 	viper.SetConfigFile(".env")
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		logger.Fatal("cannot read cofiguration", err)
+		log.Fatal("☠️ cannot read configuration")
 	}
 
-	viper.SetDefault("TIMEZONE", "UTC")
-
-	err = viper.Unmarshal(&globalEnv)
+	err = viper.Unmarshal(&env)
 	if err != nil {
-		logger.Fatal("environment cant be loaded: ", err)
+		log.Fatal("☠️ environment can't be loaded: ", err)
 	}
 
-	return &globalEnv
+	return env
 }

@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"io"
+	"fmt"
 	"os"
 
 	"go.uber.org/fx/fxevent"
@@ -9,74 +9,40 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var globalLog *Logger
-var zapLogger *zap.Logger
-
 // Logger structure
 type Logger struct {
 	*zap.SugaredLogger
 }
 
-// FxLogger logger for go-fx [subbed from main logger]
-type FxLogger struct {
-	*Logger
-}
-
-// GinLogger logger for gin framework [subbed from main logger]
 type GinLogger struct {
 	*Logger
 }
 
-// GetLogger gets the global instance of the logger
+type FxLogger struct {
+	*Logger
+}
+
+var (
+	globalLogger *Logger
+	zapLogger    *zap.Logger
+)
+
+// GetLogger get the logger
 func GetLogger() Logger {
-	if globalLog != nil {
-		return *globalLog
+	if globalLogger == nil {
+		logger := newLogger(NewEnv())
+		globalLogger = &logger
 	}
-	globalLog := newLogger()
-	return *globalLog
+	return *globalLogger
 }
 
-// newLogger sets up logger the main logger
-func newLogger() *Logger {
-
-	env := os.Getenv("ENVIRONMENT")
-	logLevel := os.Getenv("LOG_LEVEL")
-
-	config := zap.NewDevelopmentConfig()
-
-	if env == "local" {
-		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	}
-
-	var level zapcore.Level
-	switch logLevel {
-	case "debug":
-		level = zapcore.DebugLevel
-	case "info":
-		level = zapcore.InfoLevel
-	case "warn":
-		level = zapcore.WarnLevel
-	case "error":
-		level = zapcore.ErrorLevel
-	case "fatal":
-		level = zapcore.FatalLevel
-	default:
-		level = zap.PanicLevel
-	}
-	config.Level.SetLevel(level)
-	zapLogger, _ = config.Build()
-
-	globalLog := zapLogger.Sugar()
-
-	return &Logger{
-		SugaredLogger: globalLog,
-	}
-
-}
-
-func newSugaredLogger(logger *zap.Logger) *Logger {
-	return &Logger{
-		SugaredLogger: logger.Sugar(),
+// GetGinLogger get the gin logger
+func (l Logger) GetGinLogger() GinLogger {
+	logger := zapLogger.WithOptions(
+		zap.WithCaller(false),
+	)
+	return GinLogger{
+		Logger: newSugaredLogger(logger),
 	}
 }
 
@@ -88,6 +54,7 @@ func (l *Logger) GetFxLogger() fxevent.Logger {
 	return &FxLogger{Logger: newSugaredLogger(logger)}
 }
 
+// LogEvent log event for fx logger
 func (l *FxLogger) LogEvent(event fxevent.Event) {
 	switch e := event.(type) {
 	case *fxevent.OnStartExecuting:
@@ -154,26 +121,61 @@ func (l *FxLogger) LogEvent(event fxevent.Event) {
 	}
 }
 
-// GetGinLogger gets logger for gin framework debugging
-func (l *Logger) GetGinLogger() io.Writer {
-	logger := zapLogger.WithOptions(
-		zap.WithCaller(false),
-	)
-	return GinLogger{
-		Logger: newSugaredLogger(logger),
+func newSugaredLogger(logger *zap.Logger) *Logger {
+	return &Logger{
+		SugaredLogger: logger.Sugar(),
 	}
 }
 
-// Printf prints go-fx logs
+// newLogger sets up logger
+func newLogger(env Env) Logger {
+
+	config := zap.NewDevelopmentConfig()
+	logOutput := os.Getenv("LOG_OUTPUT")
+
+	if env.Environment == "development" {
+		fmt.Println("encode level")
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	}
+
+	if env.Environment == "production" && logOutput != "" {
+		config.OutputPaths = []string{logOutput}
+	}
+
+	logLevel := env.LogLevel
+	level := zap.PanicLevel
+	switch logLevel {
+	case "debug":
+		level = zapcore.DebugLevel
+	case "info":
+		level = zapcore.InfoLevel
+	case "warn":
+		level = zapcore.WarnLevel
+	case "error":
+		level = zapcore.ErrorLevel
+	case "fatal":
+		level = zapcore.FatalLevel
+	default:
+		level = zap.PanicLevel
+	}
+	config.Level.SetLevel(level)
+
+	zapLogger, _ = config.Build()
+	logger := newSugaredLogger(zapLogger)
+
+	return *logger
+}
+
+// Write interface implementation for gin-framework
+func (l GinLogger) Write(p []byte) (n int, err error) {
+	l.Info(string(p))
+	return len(p), nil
+}
+
+// Printf prits go-fx logs
 func (l FxLogger) Printf(str string, args ...interface{}) {
 	if len(args) > 0 {
 		l.Debugf(str, args)
 	}
 	l.Debug(str)
-}
-
-// Writer interface implementation for gin-framework
-func (l GinLogger) Write(p []byte) (n int, err error) {
-	l.Info(string(p))
-	return len(p), nil
 }

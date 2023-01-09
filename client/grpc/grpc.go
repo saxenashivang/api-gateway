@@ -11,6 +11,7 @@ var Module = fx.Options(
 	fx.Provide(NewGrpcConnection),
 )
 
+// private
 func NewGrpcConnection() micro.Service {
 	srv := micro.NewService(
 		micro.Client(grpc.NewClient()),

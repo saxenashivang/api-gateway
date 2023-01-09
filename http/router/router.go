@@ -1,4 +1,4 @@
-package infrastructure
+package router
 
 import (
 	"net/http"
@@ -18,7 +18,7 @@ type Router struct {
 
 // NewRouter : all the routes are defined here
 func NewRouter(
-	env *lib.Env,
+	env lib.Env,
 	logger lib.Logger,
 ) Router {
 

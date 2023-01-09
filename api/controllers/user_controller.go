@@ -18,6 +18,7 @@ type UserController struct {
 	logger  lib.Logger
 }
 
+// TODO - figure out name resulution conyainer
 func NewUserController(srv micro.Service, logger lib.Logger) *UserController {
 	c := userpb.NewUserService(constants.UserService, srv.Client())
 	return &UserController{
