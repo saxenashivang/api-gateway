@@ -2,29 +2,25 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"github.com/saxenashivang/api-gateway/api/controllers"
 	"github.com/saxenashivang/api-gateway/api/middlewares"
 	"github.com/saxenashivang/api-gateway/api/routes"
-	"github.com/saxenashivang/api-gateway/client/grpc"
-	"github.com/saxenashivang/api-gateway/http"
+	"github.com/saxenashivang/api-gateway/client"
 	"github.com/saxenashivang/api-gateway/lib"
-	"github.com/saxenashivang/api-gateway/servers/rest"
+	"github.com/saxenashivang/api-gateway/server"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
 )
 
-// Version is the build version. It is auto assigned at build time.
-var Version = ""
-
-func run() error {
+// Dependency injection bootstrap function
+func bootstrap() error {
 	logger := lib.GetLogger()
 	app := fx.New(
-		grpc.Module,
+		client.GRPCModule,
 		controllers.Module,
 		routes.Module,
-		http.Module,
 		middlewares.Module,
 		lib.Module,
 		fx.Options(
@@ -33,10 +29,12 @@ func run() error {
 			}),
 		),
 		fx.Invoke(
-			rest.Run,
+			server.StartHTTPServer,
 		),
+		// TODO: figure this out
 		// fx.Decorate(logger.GetFxLogger()),
 	)
+
 	ctx := context.Background()
 	err := app.Start(ctx)
 	defer func() {
@@ -48,10 +46,10 @@ func run() error {
 	if err != nil {
 		logger.Fatal(err)
 	}
+
 	if err := app.Err(); err != nil {
 		return err
 	}
-
 	app.Run()
 
 	return nil
@@ -59,7 +57,7 @@ func run() error {
 
 // main : entry point
 func main() {
-	if err := run(); err != nil {
-		fmt.Println(err)
+	if err := bootstrap(); err != nil {
+		log.Panic(err)
 	}
 }

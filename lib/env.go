@@ -29,7 +29,12 @@ func NewEnv() Env {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatal("☠️ cannot read configuration")
+		// TODO: default provider only for dockerfile
+		env.Environment = "dev"
+		env.LogLevel = "info"
+		env.ServerPort = "8000"
+		return env
+		// log.Fatal("☠️ cannot read configuration")
 	}
 
 	err = viper.Unmarshal(&env)

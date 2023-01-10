@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package userService;
+
+option go_package = "./proto;userservice";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+
+service UserService {
+	// GetUserProfile return a profile of a user
+	rpc GetUser(getUserRequest) returns (User){}
+
+	rpc CreateUser(createUserRequest) returns (User){}
+	rpc DeleteUser(deleteUserRequest) returns (google.protobuf.Empty){}
+}
+
+message getUserRequest{
+	string id = 1;
+}
+
+message deleteUserRequest{
+	string id = 1;
+}
+
+message createUserRequest{
+	User user = 1;
+}
+
+message User {
+	string id = 1;
+	string name = 3 [
+		(validate.rules).string={min_len: 1 max_len: 100}
+	];
+	string user_name = 4;
+	string email = 5 [
+		(validate.rules).string.min_len = 0,
+		(validate.rules).string.email= true
+	];
+	string phone_number = 6 ;
+	string profile_pic_url = 7 ;
+	google.protobuf.Timestamp created_on = 8;
+}
+
+//		@protoc -I . --proto_path=../../protos --micro_out=. --grpc-gateway_out=. --go-grpc_out=. --go_out=:. --validate_out='lang=go:./' proto/userService.proto

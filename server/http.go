@@ -1,4 +1,4 @@
-package rest
+package server
 
 import (
 	"time"
@@ -6,16 +6,15 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/saxenashivang/api-gateway/api/middlewares"
 	"github.com/saxenashivang/api-gateway/api/routes"
-	"github.com/saxenashivang/api-gateway/http/router"
 	"github.com/saxenashivang/api-gateway/lib"
 )
 
-func Run(
+func StartHTTPServer(
 	middleware middlewares.Middlewares,
 	env lib.Env,
 	route routes.Routes,
 	logger lib.Logger,
-	router router.Router,
+	router lib.RequestHandler,
 ) {
 	logger.Info(`+-----------------------+`)
 	logger.Info(`| API-GATEWAY |`)
@@ -40,12 +39,12 @@ func Run(
 	}
 	logger.Info("Running server")
 	if env.ServerPort == "" {
-		if err := router.Run(); err != nil {
+		if err := router.Gin.Run(); err != nil {
 			logger.Fatal(err)
 			return
 		}
 	} else {
-		if err := router.Run(":" + env.ServerPort); err != nil {
+		if err := router.Gin.Run(":" + env.ServerPort); err != nil {
 			logger.Fatal(err)
 			return
 		}

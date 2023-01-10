@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	userpb "userservice/proto"
+
+	"github.com/saxenashivang/api-gateway/constants"
+	userpb "github.com/saxenashivang/api-gateway/services/user/proto"
 
 	"github.com/gin-gonic/gin"
-	"github.com/saxenashivang/api-gateway/constants"
 	"github.com/saxenashivang/api-gateway/lib"
 	"go-micro.dev/v4"
 )

@@ -2,20 +2,19 @@ package routes
 
 import (
 	"github.com/saxenashivang/api-gateway/api/controllers"
-	http "github.com/saxenashivang/api-gateway/http/router"
 	"github.com/saxenashivang/api-gateway/lib"
 )
 
 // UserRoutes struct
 type UserRoutes struct {
 	logger         lib.Logger
-	handler        http.Router
+	handler        lib.RequestHandler
 	userController *controllers.UserController
 }
 
 func NewUserRoutes(
 	logger lib.Logger,
-	handler http.Router,
+	handler lib.RequestHandler,
 	userController *controllers.UserController,
 ) *UserRoutes {
 	return &UserRoutes{
@@ -27,9 +26,9 @@ func NewUserRoutes(
 
 // Setup user routes
 func (s *UserRoutes) Setup() {
-	s.logger.Info("Setting up routes")
+	s.logger.Info("Setting up user routes")
 
-	api := s.handler.Group("/api").Use()
+	api := s.handler.Gin.Group("/api").Use()
 	api.GET("/user/:id", s.userController.GetUser)
 
 }
