@@ -3,18 +3,19 @@ package server
 import (
 	"time"
 
+	"api-gateway/api/middlewares"
+	"api-gateway/api/routes"
+	"api-gateway/lib"
+
 	"github.com/getsentry/sentry-go"
-	"github.com/saxenashivang/api-gateway/api/middlewares"
-	"github.com/saxenashivang/api-gateway/api/routes"
-	"github.com/saxenashivang/api-gateway/lib"
 )
 
 func StartHTTPServer(
 	middleware middlewares.Middlewares,
 	env lib.Env,
+	router lib.RequestHandler,
 	route routes.Routes,
 	logger lib.Logger,
-	router lib.RequestHandler,
 ) {
 	logger.Info(`+-----------------------+`)
 	logger.Info(`| API-GATEWAY |`)

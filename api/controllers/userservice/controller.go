@@ -1,4 +1,4 @@
-package controllers
+package userservice
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type UserController struct {
 	logger  lib.Logger
 }
 
-// TODO - figure out name resulution conyainer
+// constructor to connect user microservice
 func NewUserController(srv micro.Service, logger lib.Logger) *UserController {
 	c := userpb.NewUserService(constants.UserService, srv.Client())
 	return &UserController{
@@ -29,7 +29,7 @@ func NewUserController(srv micro.Service, logger lib.Logger) *UserController {
 	}
 }
 
-// GetOneUser gets one user
+// GetUser gets one user
 func (u *UserController) GetUser(c *gin.Context) {
 	res, err := u.service.GetUser(context.Background(), &userpb.GetUserRequest{Id: "1"})
 	fmt.Println(res, err)

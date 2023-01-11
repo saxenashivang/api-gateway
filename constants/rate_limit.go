@@ -4,5 +4,5 @@ import "time"
 
 const (
 	RateLimitPeriod          = 15 * time.Minute
-	RateLimitRequestsPerUser = int64(100)
+	RateLimitRequestsPerUser = int64(10)
 )

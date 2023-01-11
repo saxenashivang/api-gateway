@@ -1,4 +1,4 @@
-module github.com/saxenashivang/api-gateway
+module api-gateway
 
 go 1.19
 
@@ -9,6 +9,7 @@ require (
 	github.com/go-micro/plugins/v4/client/grpc v1.2.0
 	github.com/rs/cors/wrapper/gin v0.0.0-20221003140808-fcebdb403f4d
 	github.com/spf13/viper v1.14.0
+	github.com/ulule/limiter/v3 v3.10.0
 	go-micro.dev/v4 v4.9.0
 	go.uber.org/fx v1.19.0
 	go.uber.org/zap v1.24.0

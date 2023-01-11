@@ -12,7 +12,10 @@ service UserService {
 	// GetUserProfile return a profile of a user
 	rpc GetUser(getUserRequest) returns (User){}
 
+	// CreateUser create a user into database
 	rpc CreateUser(createUserRequest) returns (User){}
+
+	// DeleteUser delete user from database
 	rpc DeleteUser(deleteUserRequest) returns (google.protobuf.Empty){}
 }
 
@@ -29,18 +32,16 @@ message createUserRequest{
 }
 
 message User {
-	string id = 1;
+	string id = 1;  // unique generated uuid
 	string name = 3 [
 		(validate.rules).string={min_len: 1 max_len: 100}
 	];
-	string user_name = 4;
+	string user_name = 4; // unique username of user
 	string email = 5 [
 		(validate.rules).string.min_len = 0,
 		(validate.rules).string.email= true
 	];
-	string phone_number = 6 ;
+	string phone_number = 6 ;  // phone number of user
 	string profile_pic_url = 7 ;
 	google.protobuf.Timestamp created_on = 8;
 }
-
-//		@protoc -I . --proto_path=../../protos --micro_out=. --grpc-gateway_out=. --go-grpc_out=. --go_out=:. --validate_out='lang=go:./' proto/userService.proto

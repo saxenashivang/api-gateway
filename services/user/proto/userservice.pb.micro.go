@@ -41,7 +41,9 @@ func NewUserServiceEndpoints() []*api.Endpoint {
 type UserService interface {
 	// GetUserProfile return a profile of a user
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...client.CallOption) (*User, error)
+	// CreateUser create a user into database
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*User, error)
+	// DeleteUser delete user from database
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*emptypb.Empty, error)
 }
 
@@ -92,7 +94,9 @@ func (c *userService) DeleteUser(ctx context.Context, in *DeleteUserRequest, opt
 type UserServiceHandler interface {
 	// GetUserProfile return a profile of a user
 	GetUser(context.Context, *GetUserRequest, *User) error
+	// CreateUser create a user into database
 	CreateUser(context.Context, *CreateUserRequest, *User) error
+	// DeleteUser delete user from database
 	DeleteUser(context.Context, *DeleteUserRequest, *emptypb.Empty) error
 }
 

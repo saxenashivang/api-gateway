@@ -5,6 +5,8 @@ import "go.uber.org/fx"
 // Module Middleware exported
 var Module = fx.Options(
 	fx.Provide(NewMiddlewares),
+	fx.Provide(NewCorsMiddleware),
+	fx.Provide(NewRateLimitMiddleware),
 )
 
 // IMiddleware middleware interface
@@ -17,8 +19,12 @@ type Middlewares []IMiddleware
 
 // NewMiddlewares creates new middlewares
 // Register the middleware that should be applied directly (globally)
-func NewMiddlewares() Middlewares {
-	return Middlewares{}
+func NewMiddlewares(
+	corsMiddleware CorsMiddleware,
+) Middlewares {
+	return Middlewares{
+		corsMiddleware,
+	}
 }
 
 // Setup sets up middlewares

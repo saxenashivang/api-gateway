@@ -1,8 +1,9 @@
 package middlewares
 
 import (
+	"api-gateway/lib"
+
 	cors "github.com/rs/cors/wrapper/gin"
-	"github.com/saxenashivang/api-gateway/lib"
 )
 
 // CorsMiddleware middleware for cors

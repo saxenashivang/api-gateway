@@ -4,34 +4,34 @@ import (
 	"context"
 	"log"
 
-	"github.com/saxenashivang/api-gateway/api/controllers"
-	"github.com/saxenashivang/api-gateway/api/middlewares"
-	"github.com/saxenashivang/api-gateway/api/routes"
-	"github.com/saxenashivang/api-gateway/client"
-	"github.com/saxenashivang/api-gateway/lib"
-	"github.com/saxenashivang/api-gateway/server"
+	"api-gateway/api/controllers"
+	"api-gateway/api/middlewares"
+	"api-gateway/api/routes"
+	"api-gateway/client"
+	"api-gateway/lib"
+	"api-gateway/server"
+
 	"go.uber.org/fx"
-	"go.uber.org/fx/fxevent"
 )
 
-// Dependency injection bootstrap function
+// bootstrap() : Dependency injection bootstrap function which provide grpcClient, controllers, routes, lib and middelware
+// and invoke gin based http server.
 func bootstrap() error {
 	logger := lib.GetLogger()
 	app := fx.New(
 		client.GRPCModule,
 		controllers.Module,
 		routes.Module,
-		middlewares.Module,
 		lib.Module,
+		middlewares.Module,
 		fx.Options(
-			fx.WithLogger(func() fxevent.Logger {
-				return logger.GetFxLogger()
-			}),
-		),
-		fx.Invoke(
-			server.StartHTTPServer,
-		),
-		// TODO: figure this out
+			// fx.WithLogger(func() fxevent.Logger {
+			// 	return logger.GetFxLogger()
+			// }),
+			fx.Invoke(
+				server.StartHTTPServer,
+			)),
+		// TODO: figure this out - not initializing with zap logger
 		// fx.Decorate(logger.GetFxLogger()),
 	)
 
@@ -45,10 +45,6 @@ func bootstrap() error {
 	}()
 	if err != nil {
 		logger.Fatal(err)
-	}
-
-	if err := app.Err(); err != nil {
-		return err
 	}
 	app.Run()
 
