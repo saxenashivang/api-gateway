@@ -2,6 +2,7 @@ package lib
 
 import (
 	"github.com/getsentry/sentry-go"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,12 +11,14 @@ type RequestHandler struct {
 	Gin *gin.Engine
 }
 
-// NewRequestHandler creates a new request handler
+// NewRequestHandler creates a new request handler with Gin engine initialised
 func NewRequestHandler(logger Logger, env Env) RequestHandler {
+
+	// Sentry Initialization
 	if env.Environment != "local" && env.SentryDSN != "" {
 		if err := sentry.Init(sentry.ClientOptions{
 			Dsn:         env.SentryDSN,
-			Environment: `clean-backend-` + env.Environment,
+			Environment: `api-gateway-` + env.Environment,
 		}); err != nil {
 			logger.Infof("Sentry initialization failed: %v\n", err)
 		}
@@ -29,5 +32,9 @@ func NewRequestHandler(logger Logger, env Env) RequestHandler {
 	}
 
 	httpRouter := gin.Default()
+	// Attach sentry middleware
+	httpRouter.Use(sentrygin.New(sentrygin.Options{
+		Repanic: true,
+	}))
 	return RequestHandler{Gin: httpRouter}
 }

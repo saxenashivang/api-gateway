@@ -3,6 +3,7 @@ module api-gateway
 go 1.19
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/getsentry/sentry-go v0.16.0
 	github.com/gin-gonic/gin v1.8.2

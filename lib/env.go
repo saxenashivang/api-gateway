@@ -13,7 +13,8 @@ type Env struct {
 
 	SentryDSN string `mapstructure:"SENTRY_DSN"`
 
-	TimeZone string `mapstructure:"TIMEZONE"`
+	TimeZone  string `mapstructure:"TIMEZONE"`
+	JWTSecret string `mapstructure:"JWT_SECRET"`
 }
 
 // add global envs here

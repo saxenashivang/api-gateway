@@ -14,6 +14,7 @@ import (
 
 // Global store
 // using in-memory store with goroutine which clears expired keys.
+// TODO: decide inmemory or redis
 var store = memory.NewStore()
 
 type RateLimitOption struct {
@@ -40,6 +41,8 @@ func NewRateLimitMiddleware(logger lib.Logger) RateLimitMiddleware {
 
 func (lm RateLimitMiddleware) Handle(options ...Option) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		//TODO: wil get actual get IP
+		// x-conneting IP via cloudflare
 		key := c.ClientIP() // Gets cient IP Address
 
 		lm.logger.Info("Setting up rate limit middleware")
